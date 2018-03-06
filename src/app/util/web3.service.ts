@@ -1,20 +1,30 @@
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 import Web3 from 'web3';
-import {default as contract} from 'truffle-contract';
-import {Subject} from 'rxjs/Rx';
+import { default as contract } from 'truffle-contract';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 declare let window: any;
 
+function getWindow(): any {
+  return window;
+}
+
 @Injectable()
 export class Web3Service {
+  accountsPollInterval: number;
   private web3: Web3;
-  private accounts: string[];
   public ready = false;
   public MetaCoin: any;
-  public accountsObservable = new Subject<string[]>();
+  
+  private _accountsObservable = new BehaviorSubject<string[]>([]);
+  private _web3ProviderObservable = new BehaviorSubject<boolean>(false);
+  
+  private get accounts() { return this._accountsObservable.value };
+  public get accountsObservable() { return this._accountsObservable.asObservable(); }
+  public get web3ProviderObservable() { return this._web3ProviderObservable.asObservable(); }
 
   constructor() {
-    window.addEventListener('load', (event) => {
+    getWindow().addEventListener('load', (event) => {
       this.bootstrapWeb3();
     });
   }
@@ -24,6 +34,7 @@ export class Web3Service {
     if (typeof window.web3 !== 'undefined') {
       // Use Mist/MetaMask's provider
       this.web3 = new Web3(window.web3.currentProvider);
+      this._web3ProviderObservable.next(true);
     } else {
       console.log('No web3? You should consider trying MetaMask!');
 
@@ -31,9 +42,10 @@ export class Web3Service {
       Web3.providers.HttpProvider.prototype.sendAsync = Web3.providers.HttpProvider.prototype.send;
       // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
       this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+      this._web3ProviderObservable.next(false);
     }
-
-    setInterval(() => this.refreshAccounts(), 100);
+    
+    this.refreshAccounts();
   }
 
   public async artifactsToContract(artifacts) {
@@ -65,9 +77,7 @@ export class Web3Service {
 
       if (!this.accounts || this.accounts.length !== accs.length || this.accounts[0] !== accs[0]) {
         console.log('Observed new accounts');
-
-        this.accountsObservable.next(accs);
-        this.accounts = accs;
+        this._accountsObservable.next(accs)
       }
 
       this.ready = true;
