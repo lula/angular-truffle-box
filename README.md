@@ -24,61 +24,66 @@ to install dependencies. In order install these dependencies, you will also need
 
 ## Building
 
-1. Install truffle, Angular CLI and an Ethereum client. If you don't have a test environment, we recommend Ethereum TestRPC
+Install truffle, Angular CLI and an Ethereum client. This repo was tested using Ganache CLI.
   ```bash
   npm install -g truffle
   npm install -g @angular/cli
   npm install -g ganache-cli
   ```
 
-2. Download the box.
+Download the box.
   ```bash
   truffle unbox lula/angular-truffle-box
   ```
 
-3. Run Ganache to run your private network:
+Run Ganache to run your private network:
   ```bash
   ganache-cli --noVMErrorsOnRPCResponse 
   ```
-Note the mnemonic 12-word phrase printed on startup, you will need it later.
+  Note the mnemonic 12-word phrase printed on startup, you will need it later.
 
-4. Compile and migrate your contracts.
+Compile and migrate your contracts.
   ```bash
   truffle compile && truffle migrate
   ```
 
 ## Configuration
+
 In order to connect with the Ethereum network, you will need to configure MetaMask
 
 1. Log into the `ganache-cli` test accounts in MetaMask, using the 12-word phrase printed earlier.
-    1. A detailed explaination of how to do this can be found [here](http://truffleframework.com/docs/advanced/truffle-with-metamask#using-the-browser-extension)
+    - A detailed explaination of how to do this can be found [here](http://truffleframework.com/docs/advanced/truffle-with-metamask#using-the-browser-extension)
         - Normally, the available test accounts will change whenever you restart `ganache-cli`.
         - In order to receive the same test accounts every time you start `ganache`, start it with a seed like this: `ganache-cli --seed 0` or `ganache-cli -m "put your mnemonic phrase here needs twelve words to work with MetaMask"`
 2. Point MetaMask to `ganache-cli` by connecting to the network `localhost:8545`
 
 ## Running
 
-1. Run the app using Angular CLI:
+Run the app using Angular CLI:
+
   ```bash
   ng serve
   ```
-  The app is now served on localhost:4200
-2. Making sure you have configured MetaMask, visit http://localhost:4200 in your browser (you can also test it withotu MetaMastk too)
-3. Send MetaCoins!
+
+The app is now served on localhost:4200.
+
+Making sure you have configured MetaMask, visit http://localhost:4200 in your browser (you can test it without MetaMastk too).
+
+Send MetaCoins!
 
 ## Testing
 
-1. Running the Angular component tests:
+Running the Angular component tests:
   ```bash
   ng test
   ```
 
-2. Running the Truffle tests:
+Running the Truffle tests:
   ```bash
   truffle test
   ```
 
-3. Running Protactor end-to-end tests
+Running Protactor end-to-end tests
 
   ```bash
   ng e2e
